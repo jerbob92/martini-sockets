@@ -672,13 +672,7 @@ func upgradeRequest(resp http.ResponseWriter, req *http.Request, o *Options) (*w
 		o.log("Method %s is not allowed", LogLevelWarning, req.RemoteAddr, req.Method)
 		return nil, http.StatusMethodNotAllowed, errors.New("Method not allowed")
 	}
-	if r, err := regexp.MatchString("https?://"+req.Host+"$", req.Header.Get("Origin")); !r || err != nil {
-		o.log("Origin %s is not allowed", LogLevelWarning, req.RemoteAddr, req.Host)
-		return nil, http.StatusForbidden, errors.New("Origin not allowed")
-	}
-
-	o.log("Request to %s has been allowed for origin %s", LogLevelDebug, req.RemoteAddr, req.Host, req.Header.Get("Origin"))
-
+	
 	ws, err := websocket.Upgrade(resp, req, nil, 1024, 1024)
 	if handshakeErr, ok := err.(websocket.HandshakeError); ok {
 		o.log("Handshake failed: %s", LogLevelWarning, req.RemoteAddr, handshakeErr)
